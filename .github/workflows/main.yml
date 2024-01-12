@@ -30,7 +30,11 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           set +x
 
       - name: Change package name
-        run: flutter pub run change_app_package_name:main com.example.actions
+        run: |
+          flutter pub get
+          flutter pub run change_app_package_name:main com.example.actions
+          cd android
+          ./gradlew assembleDebug
 
       - name: Build Gradle
         run: flutter build apk --debug
