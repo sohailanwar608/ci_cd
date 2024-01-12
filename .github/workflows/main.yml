@@ -29,6 +29,9 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           sed -i 's/android:label="ci_cd"/android:label="Actions"/' android/app/src/main/AndroidManifest.xml
           set +x
 
+      - name: Change package name
+        run: flutter pub run change_app_package_name:main com.example.actions
+
       - name: Build Gradle
         run: flutter build apk --debug
       - run: ls build/app/outputs/flutter-apk
