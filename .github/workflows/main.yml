@@ -27,7 +27,6 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         run: |
           set -x
           sed -i 's/android:label="ci_cd"/android:label="Actions"/' android/app/src/main/AndroidManifest.xml
-          sed -i '' 's/<key>CFBundleName<\/key>.*/<key>CFBundleName<\/key>\n<string>Actions<\/string>/' ios/Runner/Info.plist
           set +x
 
       - name: Build Gradle
