@@ -38,11 +38,15 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         run: |
           sed -i 's|image_path: "assets/images/old_icon.png"|image_path: "assets/images/desk_icon.png"|' pubspec.yaml
           if ! grep -q 'image_path:' pubspec.yaml; then
-          echo "flutter_icons:" >> pubspec.yaml
-          echo "  android: true" >> pubspec.yaml
-          echo "  ios: true" >> pubspec.yaml
-          echo '  image_path: "assets/icon/desk_icon.png"' >> pubspec.yaml
+            echo "flutter_icons section not found, adding..."
+            echo "flutter_icons:" >> pubspec.yaml
+            echo "  android: true" >> pubspec.yaml
+            echo "  ios: true" >> pubspec.yaml
+            echo '  image_path: "assets/icon/desk_icon.png"' >> pubspec.yaml
+          else
+            echo "flutter_icons section found, no changes needed."
           fi
+          chmod 644 pubspec.yaml  # Ensure read and write permissions for the owner, and read-only for others
 
 #      - name: Build Android
 #        run: cd android && ./gradlew assembleDebug
