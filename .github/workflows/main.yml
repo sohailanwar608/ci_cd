@@ -22,6 +22,12 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         with:
           channel: 'stable'
 
+
+      - name: Change app name
+        run: |
+          sed -i 's/android:label="old_app_name"/android:label="Actions"/' android/app/src/main/AndroidManifest.xml
+          sed -i '' 's/<key>CFBundleName<\/key>.*/<key>CFBundleName<\/key>\n<string>Actions<\/string>/' ios/Runner/Info.plist
+
       - name: Build Gradle
         run: flutter build apk --debug
       - run: ls build/app/outputs/flutter-apk
