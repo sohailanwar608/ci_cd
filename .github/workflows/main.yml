@@ -31,6 +31,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 
       - name: Change package name
         run: |
+          flutter pub get
           flutter pub run change_app_package_name:main com.example.actions
 
 #      - name: Build Android
