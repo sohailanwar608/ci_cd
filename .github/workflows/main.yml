@@ -32,7 +32,12 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       - name: Change package name
         run: |
           flutter pub get
-          flutter pub run change_app_package_name:main com.example.actions
+          flutter pub run change_app_package_name:main com.example.ci_cd
+
+      - name: Update pubspec.yaml
+        run: |
+          sed -i 's|image_path: "assets/images/old_icon.png"|image_path: "assets/images/desk_icon.png"|' pubspec.yaml
+          if ! grep -q 'image_path:' pubspec.yaml; then echo "flutter_icons:\n  android: true\n  ios: true\n  image_path: \"assets/icon/desk_icon.png\"" >> pubspec.yaml; fi
 
 #      - name: Build Android
 #        run: cd android && ./gradlew assembleDebug
