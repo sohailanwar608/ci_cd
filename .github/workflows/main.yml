@@ -31,12 +31,11 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 
       - name: Change package name
         run: |
-          flutter pub get
           flutter pub run change_app_package_name:main com.example.actions
 
-      - name: Build Android
-        run: cd android && ./gradlew assembleDebug
-        working-directory: ./android
+#      - name: Build Android
+#        run: cd android && ./gradlew assembleDebug
+#        working-directory: ./android
 
       - name: Build Gradle
         run: flutter build apk --debug
