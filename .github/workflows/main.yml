@@ -75,9 +75,18 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         run: |
           ICON_PATH="assets/icon/$(echo $CONFIG | jq -r .iconPath)"
           sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
-          
+
           flutter pub get
-          flutter pub run flutter_launcher_icons:main --config=flutter_launcher_icons.yaml
+          flutter pub run flutter_launcher_icons:main
+
+          # Use flutter CLI to set the app icon directly
+          flutter pub get
+          flutter pub run flutter_launcher_icons:main
+          flutter pub get
+          flutter pub run flutter_launcher_icons:main --flutter-arg=--no-version-check --flutter-arg=--pub-run
+
+        
+      
       
 
       #      - name: Update pubspec.yaml
