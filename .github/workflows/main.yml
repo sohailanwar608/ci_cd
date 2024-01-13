@@ -26,6 +26,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         id: read-config
         run: echo "CONFIG=$(cat config.json | tr -d '\n')" >> $GITHUB_ENV
 
+
       - name: Change app name
         run: |
           set -x
