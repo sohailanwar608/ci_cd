@@ -40,15 +40,15 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           set +x
 
 
-      - name: Change package name
-        run: |
-          flutter pub get
-          flutter pub run change_app_package_name:main $CONFIG.packageName
-
 #      - name: Change package name
 #        run: |
 #          flutter pub get
-#          flutter pub run change_app_package_name:main com.example.ci_cd
+#          flutter pub run change_app_package_name:main $CONFIG.packageName
+
+      - name: Change package name
+        run: |
+          flutter pub get
+          flutter pub run change_app_package_name:main com.example.ci_cd
 
 #      - name: Check Directory Contents
 #        run: ls -R assets/icon
