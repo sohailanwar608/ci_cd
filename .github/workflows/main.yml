@@ -26,29 +26,29 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         id: read-config
         run: echo "CONFIG=$(cat config.json | tr -d '\n')" >> $GITHUB_ENV
 
+      - name: Set Permissions for Image File
+        run: sudo chown $USER:$USER "assets/icon/$(echo $CONFIG | jq -r .iconPath)"
 
-      - name: Change package name and app name and update app icon
+      - name: Change package name, app name, and update app icon
         run: |
           flutter pub get
           flutter pub run change_app_package_name:main --app_package_name=$CONFIG.packageName
-          
-          
 
           set -x
           sed -i "s/android:label=\"ci_cd\"/android:label=\"$CONFIG.appName\"/" android/app/src/main/AndroidManifest.xml
           set +x
-          
-          
+
           ICON_PATH="assets/icon/$(echo $CONFIG | jq -r .iconPath)"
           sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
 
-         flutter pub get
-         flutter pub run flutter_launcher_icons:main --config=flutter_launcher_icons.yaml
+          flutter pub get
+          flutter pub run flutter_launcher_icons:main --config=flutter_launcher_icons.yaml
+      
+      
+      
+      
 
-
-
-
-#      - name: Change app name
+      #      - name: Change app name
 #        run: |
 #          set -x
 #          sed -i "s/android:label=\"ci_cd\"/android:label=\"$CONFIG.appName\"/" android/app/src/main/AndroidManifest.xml
@@ -74,8 +74,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #      - name: Check Directory Contents
 #        run: ls -R assets/icon
 
-      - name: Set Permissions for Image File
-        run: sudo chown $USER:$USER "assets/icon/$(echo $CONFIG | jq -r .iconPath)"
+
 
 #      - name: Set Permissions for Image File
 #        run: sudo chown $USER:$USER "assets/icon/desk_icon.png"
