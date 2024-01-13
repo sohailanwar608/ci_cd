@@ -22,6 +22,9 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         with:
           channel: 'stable'
 
+      - name: Debug AndroidManifest.xml
+        run: cat android/app/src/main/AndroidManifest.xml
+
       - name: Read Config File
         id: read-config
         run: echo "CONFIG=$(cat config.json | tr -d '\n')" >> $GITHUB_ENV
@@ -116,6 +119,13 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #      - name: Build Android
 #        run: cd android && ./gradlew assembleDebug
 #        working-directory: ./android
+
+
+      - name: Debug Modified AndroidManifest.xml
+        run: cat android/app/src/main/AndroidManifest.xml
+
+      - name: Clean Build
+        run: flutter clean
 
       - name: Build Gradle
         run: flutter build apk --debug
