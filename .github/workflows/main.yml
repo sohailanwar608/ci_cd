@@ -77,9 +77,9 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       
       
 
-      - name: Update pubspec.yaml
-        run: |
-          sed -i 's|image_path:.*|image_path: "assets/icon/desk_icon.png"|' pubspec.yaml
+#      - name: Update pubspec.yaml
+#        run: |
+#          sed -i 's|image_path:.*|image_path: "assets/icon/desk_icon.png"|' pubspec.yaml
 #          if ! grep -q 'image_path:' pubspec.yaml; then
 #            echo "flutter_icons section not found, adding..."
 #            echo "flutter_icons:" >> pubspec.yaml
@@ -89,8 +89,8 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #          else
 #            echo "flutter_icons section found, no changes needed."
 #          fi
-          flutter pub get
-          flutter pub run flutter_launcher_icons:main
+#          flutter pub get
+#          flutter pub run flutter_launcher_icons:main
 
 #      - name: Build Android
 #        run: cd android && ./gradlew assembleDebug
