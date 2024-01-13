@@ -55,7 +55,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       - name: Build Gradle
         run: flutter build apk --debug
       - run: ls build/app/outputs/flutter-apk
-      - run: ls build/app/outputs/bundle/release
+#      - run: ls build/app/outputs/bundle/release
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
