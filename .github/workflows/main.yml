@@ -59,21 +59,21 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         #      - name: Set Permissions for Image File
 #        run: sudo chown $USER:$USER "assets/icon/desk_icon.png"
 
-      - name: Update pubspec.yaml
-        run: |
-          ICON_PATH="assets/icon/$(echo $CONFIG | jq -r .iconPath)"
-          sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
-          if ! grep -q 'image_path:' pubspec.yaml; then
-             echo "flutter_icons section not found, adding..."
-             echo "flutter_icons:" >> pubspec.yaml
-             echo "  android: true" >> pubspec.yaml
-             echo "  ios: true" >> pubspec.yaml
-             echo "  image_path: \"$ICON_PATH\"" >> pubspec.yaml
-          else
-             echo "flutter_icons section found, no changes needed."
-          fi
-          flutter pub get
-          flutter pub run flutter_launcher_icons:main
+#      - name: Update pubspec.yaml
+#        run: |
+#          ICON_PATH="assets/icon/$(echo $CONFIG | jq -r .iconPath)"
+#          sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
+#          if ! grep -q 'image_path:' pubspec.yaml; then
+#             echo "flutter_icons section not found, adding..."
+#             echo "flutter_icons:" >> pubspec.yaml
+#             echo "  android: true" >> pubspec.yaml
+#             echo "  ios: true" >> pubspec.yaml
+#             echo "  image_path: \"$ICON_PATH\"" >> pubspec.yaml
+#          else
+#             echo "flutter_icons section found, no changes needed."
+#          fi
+#          flutter pub get
+#          flutter pub run flutter_launcher_icons:main
       
       
 
