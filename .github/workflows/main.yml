@@ -22,6 +22,10 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         with:
           channel: 'stable'
 
+      - name: Read Config File
+        id: read-config
+        run: echo "CONFIG=$(cat config.json | tr -d '\n')" >> $GITHUB_ENV
+
 
       - name: Change app name
         run: |
@@ -38,22 +42,42 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #        run: ls -R assets/icon
 
       - name: Set Permissions for Image File
-        run: sudo chown $USER:$USER "assets/icon/desk_icon.png"
+        run: sudo chown $USER:$USER "assets/icon/$(echo $CONFIG | jq -r .iconPath)"
+
+        #      - name: Set Permissions for Image File
+#        run: sudo chown $USER:$USER "assets/icon/desk_icon.png"
 
       - name: Update pubspec.yaml
         run: |
-          sed -i 's|image_path:.*|image_path: "assets/icon/desk_icon.png"|' pubspec.yaml
+          ICON_PATH = "assets/icon/$(echo $CONFIG | jq -r .iconPath)"
+          sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
           if ! grep -q 'image_path:' pubspec.yaml; then
-            echo "flutter_icons section not found, adding..."
-            echo "flutter_icons:" >> pubspec.yaml
-            echo "  android: true" >> pubspec.yaml
-            echo "  ios: true" >> pubspec.yaml
-            echo '  image_path: "assets/icon/desk_icon.png"' >> pubspec.yaml
+          echo "flutter_icons section not found, adding..."
+          echo "flutter_icons:" >> pubspec.yaml
+          echo "  android: true" >> pubspec.yaml
+          echo "  ios: true" >> pubspec.yaml
+          echo "  image_path: \"$ICON_PATH\"" >> pubspec.yaml
           else
-            echo "flutter_icons section found, no changes needed."
+          echo "flutter_icons section found, no changes needed."
           fi
           flutter pub get
           flutter pub run flutter_launcher_icons:main
+          
+
+#      - name: Update pubspec.yaml
+#        run: |
+#          sed -i 's|image_path:.*|image_path: "assets/icon/desk_icon.png"|' pubspec.yaml
+#          if ! grep -q 'image_path:' pubspec.yaml; then
+#            echo "flutter_icons section not found, adding..."
+#            echo "flutter_icons:" >> pubspec.yaml
+#            echo "  android: true" >> pubspec.yaml
+#            echo "  ios: true" >> pubspec.yaml
+#            echo '  image_path: "assets/icon/desk_icon.png"' >> pubspec.yaml
+#          else
+#            echo "flutter_icons section found, no changes needed."
+#          fi
+#          flutter pub get
+#          flutter pub run flutter_launcher_icons:main
 
 #      - name: Build Android
 #        run: cd android && ./gradlew assembleDebug
