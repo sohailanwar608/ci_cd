@@ -41,7 +41,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #        run: ls -R assets/icon
 
       - name: Set Permissions for Image File
-        run: sudo chown $USER:$USER "CONFIG.iconPath"
+        run: sudo chown $USER:$USER "$CONFIG.iconPath"
 
 
       - name: Update pubspec.yaml
