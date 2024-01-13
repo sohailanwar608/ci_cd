@@ -22,6 +22,10 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         with:
           channel: 'stable'
 
+
+      - name: Set Permissions for AndroidManifest.xml
+        run: chmod +w android/app/src/main/AndroidManifest.xml
+
       - name: Debug AndroidManifest.xml
         run: cat android/app/src/main/AndroidManifest.xml
 
