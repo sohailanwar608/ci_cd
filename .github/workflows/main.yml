@@ -34,6 +34,9 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           flutter pub get
           flutter pub run change_app_package_name:main com.example.ci_cd
 
+      - name: Set Permissions for Image File
+        run: chmod +r "/assets/icon/desk_icon.png"
+
       - name: Update pubspec.yaml
         run: |
           sed -i 's|image_path:.*|image_path: "/assets/icon/desk_icon.png"|' pubspec.yaml
