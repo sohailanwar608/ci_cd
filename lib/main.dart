@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget
   {
     return MaterialApp
       (
-      title: 'Flutter Demoss',
+      title: 'Flutter Demossa',
       theme: ThemeData
         (
 
