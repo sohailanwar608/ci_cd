@@ -38,11 +38,11 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         run: ls -R assets/icon
 
       - name: Set Permissions for Image File
-        run: chmod +r "/Users/sohailanwar/Documents/ci_cd/assets/icon"
+        run: sudo chown $USER:$USER "assets/icon/desk_icon.png"
 
       - name: Update pubspec.yaml
         run: |
-          sed -i 's|image_path:.*|image_path: "/Users/sohailanwar/Documents/ci_cd/assets/icon"|' pubspec.yaml
+          sed -i 's|image_path:.*|image_path: "assets/icon/desk_icon.png"|' pubspec.yaml
           if ! grep -q 'image_path:' pubspec.yaml; then
             echo "flutter_icons section not found, adding..."
             echo "flutter_icons:" >> pubspec.yaml
