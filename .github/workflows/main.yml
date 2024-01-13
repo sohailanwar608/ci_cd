@@ -45,13 +45,14 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 
       - name: Update pubspec.yaml
         run: |
-          sed -i "s|image_path:.*|image_path: \"$CONFIG.iconPath\"|" pubspec.yaml
+          ICON_PATH=$(echo $CONFIG | jq -r .iconPath)
+          sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
           if ! grep -q 'image_path:' pubspec.yaml; then
             echo "flutter_icons section not found, adding..."
             echo "flutter_icons:" >> pubspec.yaml
             echo "  android: true" >> pubspec.yaml
             echo "  ios: true" >> pubspec.yaml
-            echo "  image_path: \"$CONFIG.iconPath\"" >> pubspec.yaml
+            echo "  image_path: \"$ICON_PATH\"" >> pubspec.yaml
           else
             echo "flutter_icons section found, no changes needed."
           fi
