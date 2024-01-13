@@ -23,7 +23,8 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           channel: 'stable'
 
       - name: Read Config File
-        run: echo "::set-env name=CONFIG::$(cat config.json)"
+        id: read-config
+        run: echo "CONFIG=$(cat config.json)" >> $GITHUB_ENV
 
       - name: Change app name
         run: |
