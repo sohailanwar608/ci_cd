@@ -41,7 +41,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       - name: Change app name
         run: |
           set -x
-          sed -i "s/android:label=\"ci_cd\"/android:label=\"$CONFIG.appName\"/" android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="ci_cd"/android:label="Soh"/' android/app/src/main/AndroidManifest.xml
           set +x
 
 #
