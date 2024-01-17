@@ -22,19 +22,14 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         with:
           channel: 'stable'
 
-#
-#      - name: Set Permissions for AndroidManifest.xml
-#        run: chmod +w android/app/src/main/AndroidManifest.xml
-#
-#      - name: Debug AndroidManifest.xml
-#        run: cat android/app/src/main/AndroidManifest.xml
 
       - name: Read values from appConfig.dart
         id: read-config
         run: |
-          echo "PACKAGE_NAME=\$(grep 'String packageName' appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
-          echo "APP_NAME=\$(grep 'String appName' appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
-          echo "APP_ICON=\$(grep 'String appIcon' appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=\$(grep 'String packageName' lib/appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+          echo "APP_NAME=\$(grep 'String appName' lib/appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+          echo "APP_ICON=\$(grep 'String appIcon' lib/appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+
       - name: Debugging Steps
         run: |
           cat appConfig.dart
