@@ -29,19 +29,22 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #      - name: Debug AndroidManifest.xml
 #        run: cat android/app/src/main/AndroidManifest.xml
 
-      - name: Read Config File
+      - name: Read values from appConfig.dart
         id: read-config
-        run: echo "CONFIG=$(cat config.json | tr -d '\n')" >> $GITHUB_ENV
+        run: |
+          echo "PACKAGE_NAME=\$(grep 'String packageName' appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+          echo "APP_NAME=\$(grep 'String appName' appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+          echo "APP_ICON=\$(grep 'String appIcon' appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+      
 
-      - name: Print CONFIG
-        run: echo $CONFIG
+#      - name: Print CONFIG
+#        run: echo $CONFIG
 
 
 
       - name: Change app name
         run: |
           set -x
-          APP_NAME=$(jq -r '.appName' config.json)
           sed -i "s/android:label=\"ci_cd\"/android:label=\"$APP_NAME\"/" android/app/src/main/AndroidManifest.xml
           set +x
 
@@ -63,15 +66,15 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 
       - name: Change package name
         run: |
-          PACKAGE_NAME=$(jq -r '.packageName' config.json)
+         
           flutter pub get
           flutter pub run change_app_package_name:main $PACKAGE_NAME
 
       - name: Check Directory Contents
         run: ls -R assets/icon
 
-      - name: Set Permissions for Image File
-        run: sudo chown $USER:$USER "assets/icon/$(echo $CONFIG | jq -r .iconPath)"
+#      - name: Set Permissions for Image File
+#        run: sudo chown $USER:$USER "assets/icon/$(echo $CONFIG | jq -r .iconPath)"
 #
 #      - name: Set Permissions for Image File
 #        run: sudo chown $USER:$USER "assets/icon/desk_icon.png"
@@ -82,11 +85,10 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 #          sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
 #          flutter pub get
 #          flutter pub run flutter_launcher_icons:main --config=flutter_launcher_icons.yaml
-
+#          ICON_PATH="assets/icon/$(echo $CONFIG | jq -r .iconPath)"
 
       - name: Update pubspec.yaml
         run: |
-          ICON_PATH="assets/icon/$(echo $CONFIG | jq -r .iconPath)"
           sed -i "s|image_path:.*|image_path: \"$ICON_PATH\"|" pubspec.yaml
           if ! grep -q 'image_path:' pubspec.yaml; then
              echo "flutter_icons section not found, adding..."
