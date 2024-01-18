@@ -1,15 +1,15 @@
 name: Flutter
 
-on:  #events (push and pull_request)
+on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
 
 
-jobs:   #here we specify the jobs - We could have multiple jobs
-  build:  #name it something meaningful
-    runs-on: ubuntu-latest   #runner: select a machine to use
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -23,12 +23,16 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           channel: 'stable'
 
 
-      - name: Read values from appConfig.dart
-        id: read-config
+      - name: Extract values from appConfig.dart
+        id: extract-values
         run: |
-          echo "PACKAGE_NAME=\$(grep 'String packageName' lib/appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
-          echo "APP_NAME=\$(grep 'String appName' lib/appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
-          echo "APP_ICON=\$(grep 'String appIcon' lib/appConfig.dart | awk -F \"'\" '{print \$2}')" >> $GITHUB_ENV
+          APP_NAME=$(grep 'String appName' lib/appConfig.dart | awk -F '=' '{print $2}' | tr -d ' ";')
+          PACKAGE_NAME=$(grep 'String packageName' lib/appConfig.dart | awk -F '=' '{print $2}' | tr -d ' ";')
+          APP_ICON=$(grep 'String appIcon' lib/appConfig.dart | awk -F '=' '{print $2}' | tr -d ' ";')
+          
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "APP_ICON=$APP_ICON" >> $GITHUB_ENV
 
       - name: Debugging Steps
         run: |
@@ -37,6 +41,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
           echo "PACKAGE_NAME: ${{ env.PACKAGE_NAME }}"
           echo "APP_NAME: ${{ env.APP_NAME }}"
           echo "APP_ICON: ${{ env.APP_ICON }}"
+
 
       - name: Change app name
         run: |
