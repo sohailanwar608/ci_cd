@@ -56,7 +56,7 @@ jobs:
       
 
       - name: Check Directory Contents
-        run: ls -R assets/images
+        run: ls -R assets/icon
 
 
       - name: Update pubspec.yaml
