@@ -60,7 +60,7 @@ jobs:
 
       - name: Update pubspec.yaml
         run: |
-          sed -i "s|image_path:.*|image_path: \"assets/images/${{ env.APP_ICON }}\"|" pubspec.yaml
+          sed -i "s|image_path:.*|image_path: \"assets/icon/${{ env.APP_ICON }}\"|" pubspec.yaml
           if ! grep -q 'image_path:' pubspec.yaml; then
              echo "flutter_icons section not found, adding..."
              echo "flutter_icons:" >> pubspec.yaml
