@@ -32,11 +32,11 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 
       - name: Debugging Steps
         run: |
-          cat appConfig.dart
+          cat lib/appConfig.dart
           cat android/app/src/main/AndroidManifest.xml
-          echo "PACKAGE_NAME: $PACKAGE_NAME"
-          echo "APP_NAME: $APP_NAME"
-          echo "APP_ICON: $APP_ICON"
+          echo "PACKAGE_NAME: ${{ env.PACKAGE_NAME }}"
+          echo "APP_NAME: ${{ env.APP_NAME }}"
+          echo "APP_ICON: ${{ env.APP_ICON }}"
 
       - name: Change app name
         run: |
