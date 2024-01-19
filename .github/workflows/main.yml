@@ -81,6 +81,14 @@ jobs:
         run: |
             sed -i "s/version: .*/version: $VERSION_NUMBER/" pubspec.yaml
             flutter pub get
+          
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git add .
+          git commit -m "Update version number and other files"
 
 
 
