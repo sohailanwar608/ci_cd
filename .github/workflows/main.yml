@@ -79,7 +79,7 @@ jobs:
 
       - name: Update pubspec.yaml with version from appConfig.dart
         run: |
-            sed -i "s/version: .*+/version: $VERSION_NUMBER/" pubspec.yaml
+            sed -i "s/version: .*/version: $VERSION_NUMBER/" pubspec.yaml
             flutter pub get
 
 
