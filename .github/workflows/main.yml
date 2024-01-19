@@ -28,7 +28,9 @@ jobs:
           APP_NAME=$(grep 'String appName' lib/appConfig.dart | awk -F '=' '{print $2}' | tr -d ' ";')
           PACKAGE_NAME=$(grep 'String packageName' lib/appConfig.dart | awk -F '=' '{print $2}' | tr -d ' ";')
           APP_ICON=$(grep 'String appIcon' lib/appConfig.dart | awk -F '=' '{print $2}' | tr -d ' ";')
+          VERSION_NUMBER=$(grep 'String versionNumber' lib/appConfig.dart | awk -F '= ' '{print $2}' | tr -d ' ";')
           
+          echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
           echo "APP_ICON=$APP_ICON" >> $GITHUB_ENV
@@ -39,6 +41,7 @@ jobs:
           echo "PACKAGE_NAME: ${{ env.PACKAGE_NAME }}"
           echo "APP_NAME: ${{ env.APP_NAME }}"
           echo "APP_ICON: ${{ env.APP_ICON }}"
+          echo "VERSION_NUMBER: ${{ env.VERSION_NUMBER }}"
 
 
       - name: Change app name
@@ -72,6 +75,13 @@ jobs:
           fi
           flutter pub get
           flutter pub run flutter_launcher_icons:main
+          
+
+      - name: Update pubspec.yaml with version from appConfig.dart
+        run: |
+            sed -i "s/version: .*+/version: $VERSION_NUMBER/" pubspec.yaml
+            flutter pub get
+
 
 
       - name: Build Gradle
