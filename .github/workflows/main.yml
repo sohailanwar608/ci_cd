@@ -22,30 +22,25 @@ jobs:
           channel: 'stable'
 
 
-      - name: Set Branch Name
+      - name: Set Parent Branch Name
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             PULL_REQUEST_BASE=$(curl -sSL "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.number }}" | jq -r '.base.ref')
             BRANCH_NAME=$(echo "${GITHUB_REF#refs/pull/*/merge}" | sed 's/\//-/')
             echo "PULL_REQUEST_BASE=${PULL_REQUEST_BASE}" >> $GITHUB_ENV
-          else
-            BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
-          fi
-          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
-      - name: Print Branch Name and Parent Branch
+      - name: Print Parent Branch
         run: |
-          echo "Branch Name: ${{ env.BRANCH_NAME }}"
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Parent Branch (Base Branch): ${{ env.PULL_REQUEST_BASE }}"
-          fi
+         
 
-#      - name: Set Branch Name
-#        run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
-#
-#      - name: Print Branch Name
-#        run: |
-#           echo "Branch Name: ${{ env.BRANCH_NAME }}"
+      - name: Set child Branch Name
+        run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+
+      - name: Print Child Branch Name
+        run: |
+           echo "Branch Name: ${{ env.BRANCH_NAME }}"
 
       - name: Extract values from appConfig.dart
         id: extract-values
