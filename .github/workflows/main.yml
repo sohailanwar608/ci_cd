@@ -111,7 +111,12 @@ jobs:
          git add .
          git commit -m "Update version number and other files"   
          git show --name-only
+         git config --global credential.helper "store --file=.git/credentials"
+         echo "https://github.com/sohailanwar608/ci_cd.git:${{ secrets.GIT_ACCESS_TOKEN }}" > .git/credentials
          git push origin HEAD:${{ github.head_ref }}
+         
+         
+
 #      - name: Merge Changes to Parent Branch
 #        if: success() && env.PULL_REQUEST_BASE != '' && env.PULL_REQUEST_BASE != 'main'
 #        run: |
