@@ -116,12 +116,12 @@ jobs:
         env:
          GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         run: |
-          git pull --no-rebase --allow-unrelated-histories origin ${{ github.head_ref }}
+          git pull --no-rebase --allow-unrelated-histories ${{ github.head_ref }}
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
           git add .
           git commit -m "Update v
-          git push origin HEAD:${{ github.head_ref }}
+          git push ${{ github.head_ref }}
          
          
 
