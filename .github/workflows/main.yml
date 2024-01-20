@@ -116,13 +116,13 @@ jobs:
         if: success() && env.PULL_REQUEST_BASE != '' && env.PULL_REQUEST_BASE != 'main'
         run: |
          git fetch origin ${{ env.PULL_REQUEST_BASE }}
-         git checkout ${{ env.PULL_REQUEST_BASE }}
+         git checkout -- ${{ env.PULL_REQUEST_BASE }}
          git merge ${{ env.BRANCH_NAME }} --no-edit
       
          git config --global credential.helper "store --file=.git/credentials"
          echo "https://github.com/sohailanwar608/ci_cd.git:${{ secrets.GIT_ACCESS_TOKEN }}" > .git/credentials
       
-         git checkout ${{ env.PULL_REQUEST_BASE }}
+         git checkout -- ${{ env.PULL_REQUEST_BASE }}
       
          git push origin ${{ env.PULL_REQUEST_BASE }}
 
