@@ -28,7 +28,7 @@ jobs:
             PULL_REQUEST_BASE=$(curl -sSL "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.number }}" | jq -r '.base.ref')
             BRANCH_NAME=$(echo "${GITHUB_REF#refs/pull/*/merge}" | sed 's/\//-/')
             echo "PULL_REQUEST_BASE=${PULL_REQUEST_BASE}" >> $GITHUB_ENV
-         fi
+          fi
 
       - name: Print Parent Branch
         run: |
