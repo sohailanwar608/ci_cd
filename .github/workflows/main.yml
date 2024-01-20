@@ -115,7 +115,7 @@ jobs:
       - name: Merge Changes to Parent Branch
         if: success() && env.PULL_REQUEST_BASE != '' && env.PULL_REQUEST_BASE != 'main'
         run: |
-         git fetch origin ${{ env.PULL_REQUEST_BASE }}
+         git fetch -- ${{ env.PULL_REQUEST_BASE }}
          git checkout -- ${{ env.PULL_REQUEST_BASE }}
          git merge ${{ env.BRANCH_NAME }} --no-edit
       
