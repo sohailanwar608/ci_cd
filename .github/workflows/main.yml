@@ -1,13 +1,13 @@
 name: Flutter
 
 on:
-  push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
+    types:
+      - labeled
 
 jobs:
   build:
+    if: github.event.label.name == 'DeliverToTesters'
     runs-on: ubuntu-latest
 
     steps:
