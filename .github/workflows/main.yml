@@ -116,7 +116,7 @@ jobs:
         env:
          GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         run: |
-          git pull --no-rebase origin ${{ github.head_ref }}
+          git pull --no-rebase --allow-unrelated-histories origin ${{ github.head_ref }}
           git push origin HEAD:${{ github.head_ref }}
          
          
