@@ -22,14 +22,6 @@ jobs:
           channel: 'stable'
 
 
-      - name: Set Branch Name
-        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
-
-      - name: Print Branch Name
-        run:
-          echo "Branch Name: ${{ env.BRANCH_NAME }}"
-
       - name: Extract values from appConfig.dart
         id: extract-values
         run: |
@@ -84,6 +76,19 @@ jobs:
           flutter pub get
           flutter pub run flutter_launcher_icons:main
           
+
+      - name: Update pubspec.yaml with version from appConfig.dart
+        run: |
+            sed -i "s/version: .*/version: $VERSION_NUMBER/" pubspec.yaml
+            flutter pub get
+          
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git add .
+          git commit -m "Update version number and other files"
 
 
 
