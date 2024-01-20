@@ -22,20 +22,6 @@ jobs:
           channel: 'stable'
 
 
-#      - name: Set Parent Branch Name
-#        run: |
-#          if [ "${{ github.event_name }}" == "pull_request" ]; then
-#            PULL_REQUEST_BASE=$(curl -sSL "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.number }}" | jq -r '.base.ref')
-#            BRANCH_NAME=$(echo "${GITHUB_REF#refs/pull/*/merge}" | sed 's/\//-/')
-#            echo "PULL_REQUEST_BASE=${PULL_REQUEST_BASE}" >> $GITHUB_ENV
-#          fi
-
-#      - name: Print Parent Branch
-#        run: |
-#          if [ "${{ github.event_name }}" == "pull_request" ]; then
-#            echo "Parent Branch (Base Branch): ${{ env.PULL_REQUEST_BASE }}"
-#          fi
-
       - name: Set child Branch Name
         run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
 
@@ -112,13 +98,7 @@ jobs:
          git commit -m "Update version number and other files"   
          git show --name-only
 
-#      - name: Merge Changes to Parent Branch
-#        if: success() && env.PULL_REQUEST_BASE != '' && env.PULL_REQUEST_BASE != 'main'
-#        run: |
-#         git fetch origin ${{ env.PULL_REQUEST_BASE }}
-#         git checkout -- ${{ env.PULL_REQUEST_BASE }}
-#         git merge ${{ env.BRANCH_NAME }} --no-edit
-#         git push origin ${{ env.PULL_REQUEST_BASE }}
+
 
 
 
