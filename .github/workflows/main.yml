@@ -123,12 +123,10 @@ jobs:
          git checkout ${{ env.PULL_REQUEST_BASE }}
          git merge ${{ env.BRANCH_NAME }} --no-edit
 
-     # Set up Git config with the provided PAT
-#         git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-#         git config --global user.name "${{ github.actor }}"
-         git config --global credential.helper "store --file=.git/credentials"
+
+         git config --global credential.helper "store --file=.git/credentials"  
          echo "https://github.com/sohailanwar608/ci_cd.git:${{ secrets.GIT_ACCESS_TOKEN }}" > .git/credentials
-    # Push changes back to the repository
+         # Push changes back to the repository
          git push origin ${{ env.PULL_REQUEST_BASE }}
 
 
