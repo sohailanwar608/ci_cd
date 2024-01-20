@@ -17,10 +17,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
 
+
+      - name: Set Branch Name
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
+      - name: Print Branch Name
+        run:
+          echo "Branch Name: ${{ env.BRANCH_NAME }}"
 
       - name: Extract values from appConfig.dart
         id: extract-values
