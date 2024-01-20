@@ -107,6 +107,8 @@ jobs:
             sed -i "s/version: .*/version: $VERSION_NUMBER/" pubspec.yaml
             flutter pub get
           
+          
+          
 
       - name: Commit changes
         run: |
@@ -114,6 +116,14 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git add .
           git commit -m "Update version number and other files"
+
+      - name: Merge Changes to Parent Branch
+        if: success() && env.PULL_REQUEST_BASE != '' && env.PULL_REQUEST_BASE != 'main'
+        run: |
+          git fetch origin ${{ env.PULL_REQUEST_BASE }}
+          git checkout ${{ env.PULL_REQUEST_BASE }}
+          git merge ${{ env.BRANCH_NAME }} --no-edit
+          git push origin ${{ env.PULL_REQUEST_BASE }}
 
 
 
