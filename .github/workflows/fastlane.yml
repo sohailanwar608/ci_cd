@@ -84,4 +84,6 @@ jobs:
 
 
       - name: Distribute app with 🔥 App Distribution 🚀
-        run: bundle exec fastlane distribute
+        run: |
+          cd android   # Change directory to the android directory where Gemfile is located
+          bundle exec fastlane distribute
