@@ -10,7 +10,6 @@ platform :android do
             app: ENV['FIREBASE_APP_ID'],
             release_notes: "last build",
             groups: "tester",
-            apk_path: "../build/app/outputs/flutter-apk/app-debug.apk"
         )
     end
 
