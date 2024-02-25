@@ -1,0 +1,28 @@
+default_platform(:android)
+
+platform :android do
+
+    desc "Lane for distributing app using Firebase App Distributions"
+    lane :distribute do
+        gradle(task: "clean assembleRelease")
+        firebase_app_distribution(
+            firebase_cli_token: ENV["FIREBASE_TOKEN"],
+            app: ENV['FIREBASE_APP_ID'],
+            release_notes: "last build",
+            groups: "tester",
+            apk_path: build/app/outputs/flutter-apk/app-debug.apk
+        )
+    end
+
+    desc "Deploy a beta version to the Google Play"
+    lane :beta do
+        gradle(task: "clean bundleRelease")
+        upload_to_play_store(track: 'beta', release_status: 'draft')
+    end
+
+    desc "Deploy a new version to the Google Play"
+    lane :production do
+        gradle(task: "clean bundleRelease")
+        upload_to_play_store(release_status: 'draft')
+    end
+end
