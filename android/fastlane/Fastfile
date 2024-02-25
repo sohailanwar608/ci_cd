@@ -7,8 +7,10 @@ platform :android do
         gradle(task: "clean assembleRelease")
         firebase_app_distribution(
             firebase_cli_token: ENV["FIREBASE_TOKEN"],
+            app: ENV['FIREBASE_APP_ID'],
             release_notes: "last build",
             groups: "tester",
+            android_artifact_type: "APK",
         )
     end
 
