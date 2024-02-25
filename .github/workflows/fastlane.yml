@@ -65,9 +65,10 @@ jobs:
           cd android   # Change directory to the android directory where Gemfile is located
           bundle config path vendor/bundle   # Configure Bundler to use vendor/bundle directory
           bundle install --jobs 4 --retry 3 # Install gems specified in Gemfile
-      
-      
-    
+          
+
+#      - name: Grant Permission to Execute
+#        run: chmod +x android/gradlew
 
       - name: Set environment variables from secrets
         run: |
@@ -78,7 +79,6 @@ jobs:
 
       - name: Build Gradle
         run: flutter build apk --debug
-      - run: ls build/app/outputs/flutter-apk
       #      - run: ls build/app/outputs/bundle/release
 
 
