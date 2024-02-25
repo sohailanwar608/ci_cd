@@ -19,8 +19,8 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1
-          bundler-cache: true
+          ruby-version: 2.5
+
 
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -87,3 +87,5 @@ jobs:
         run: |
           cd android   # Change directory to the android directory where Gemfile is located
           bundle exec fastlane distribute
+        env:
+          FIREBASE_APP_ID: ${{ secrets.APP_ID }}
