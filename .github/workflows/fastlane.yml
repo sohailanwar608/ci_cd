@@ -10,7 +10,7 @@ jobs:
     if: github.event.label.name == 'Deliverfastelane'
     runs-on: ubuntu-latest
 
-    steps:
+    steps: 
       - uses: actions/checkout@v2
 
       - name: set up JDK 11
