@@ -62,12 +62,12 @@ jobs:
 
       - name: Install bundle
         run: |
-          pwd
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          cd android   # Change directory to the android directory where Gemfile is located
+          bundle config path vendor/bundle   # Configure Bundler to use vendor/bundle directory
+          bundle install --jobs 4 --retry 3 # Install gems specified in Gemfile
       
       
-      
+    
 
       - name: Set environment variables from secrets
         run: |
