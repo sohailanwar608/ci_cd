@@ -103,25 +103,23 @@ jobs:
             sed -i "s/version: .*/version: $VERSION_NUMBER/" pubspec.yaml
             flutter pub get
           
-          
-      - name: Commit changes
-        run: |
-         git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-         git config --global user.name "${{ github.actor }}"
-         git add .
-         git commit -m "Update version number and other files"   
-         git show --name-only
+
 
       - name: Push changes
-        run: |
-         git push origin HEAD:${{ github.head_ref }}
         env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
+        run: |
+          git pull ${{ github.head_ref }}
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git add .
+          git commit -m "Update version number and other files"   
+          git show --name-only
+          git push ${{ github.head_ref }}
+         
+         
 
-
-
-
-      #      - name: Merge Changes to Parent Branch
+#      - name: Merge Changes to Parent Branch
 #        if: success() && env.PULL_REQUEST_BASE != '' && env.PULL_REQUEST_BASE != 'main'
 #        run: |
 #         git fetch  ${{ env.PULL_REQUEST_BASE }}
