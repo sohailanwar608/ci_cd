@@ -67,8 +67,8 @@ jobs:
           bundle install --jobs 4 --retry 3 # Install gems specified in Gemfile
           
 
-      - name: Grant Permission to Execute
-        run: chmod +x android/gradlew
+#      - name: Grant Permission to Execute
+#        run: chmod +x android/gradlew
 
       - name: Set environment variables from secrets
         run: |
