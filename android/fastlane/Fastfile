@@ -11,7 +11,7 @@ platform :android do
             release_notes: "last build",
             groups: "tester",
             android_artifact_type: "APK",
-            file: build/app/outputs/flutter-apk/app-debug.apk
+            apk_path: "../build/app/outputs/flutter-apk/app-debug.apk"
         )
     end
 
