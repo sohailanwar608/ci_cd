@@ -5,7 +5,7 @@ on:
     types:
       - labeled
 
-jobs:
+jobs: 
   build:
     if: github.event.label.name == 'Deliverfastelane'
     runs-on: ubuntu-latest
