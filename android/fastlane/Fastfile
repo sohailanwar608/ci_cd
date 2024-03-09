@@ -6,7 +6,7 @@ platform :android do
     lane :distribute do
         gradle(task: "clean assembleRelease")
         firebase_app_distribution(
-            puts "APK Path: #{ENV['APK_PATH']}"
+            puts "APK Path: #{ENV['APK_PATH']}",
             firebase_cli_token: ENV["FIREBASE_TOKEN"],
             app: ENV['FIREBASE_APP_ID'],
             release_notes: "last build",
