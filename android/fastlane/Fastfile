@@ -13,7 +13,7 @@ platform :android do
             debug: true,
             android_artifact_type: "APK",
             firebase_cli_path: "/usr/local/bin/firebase",
-
+            apk_path: ENV["APK_PATH"]
         )
     end
 
