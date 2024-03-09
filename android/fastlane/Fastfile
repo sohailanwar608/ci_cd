@@ -6,7 +6,6 @@ platform :android do
     lane :distribute do
         gradle(task: "clean assembleRelease")
         firebase_app_distribution(
-            puts "APK Path: #{ENV['APK_PATH']}",
             firebase_cli_token: ENV["FIREBASE_TOKEN"],
             app: ENV['FIREBASE_APP_ID'],
             release_notes: "last build",
@@ -14,7 +13,7 @@ platform :android do
             debug: true,
             android_artifact_type: "APK",
             firebase_cli_path: "/usr/local/bin/firebase",
-            apk_path: ENV["APK_PATH"]
+            apk_path: 'build/app/outputs/flutter-apk/app-debug.apk'
         )
     end
 

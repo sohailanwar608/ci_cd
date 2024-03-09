@@ -81,22 +81,9 @@ jobs:
         run: flutter build apk --debug
       #      - run: ls build/app/outputs/bundle/release
 
-      - name: Archive Build Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-
-      - name: Download Artifact
-        id: download_apk
-        uses: actions/download-artifact@v2
-        with:
-          name: debug-apk
 
 
       - name: Distribute app with 🔥 App Distribution 🚀
-        env:
-          APK_PATH: ${{ steps.download_apk.outputs.download-path }}
         run: |
           cd android   # Change directory to the android directory where Gemfile is located
           bundle exec fastlane distribute
