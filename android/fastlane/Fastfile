@@ -4,7 +4,6 @@ platform :android do
 
     desc "Lane for distributing app using Firebase App Distributions"
     lane :distribute do
-
         firebase_app_distribution(
             firebase_cli_token: ENV["FIREBASE_TOKEN"],
             app: ENV['FIREBASE_APP_ID'],
@@ -13,7 +12,7 @@ platform :android do
             debug: true,
             android_artifact_type: "APK",
             firebase_cli_path: "/usr/local/bin/firebase",
-            apk_path: '/Users/sohailanwar/Documents/ci_cd/build/app/outputs/flutter-apk/app-debug.apk'
+            apk_path: '../build/app/outputs/flutter-apk/app-debug.apk'
         )
     end
 

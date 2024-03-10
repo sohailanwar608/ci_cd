@@ -81,6 +81,8 @@ jobs:
         run: flutter build apk --debug
       #      - run: ls build/app/outputs/bundle/release
 
+      - name: Add Firebase App Distribution Plugin
+        run: fastlane add_plugin firebase_app_distribution
 
 
       - name: Distribute app with 🔥 App Distribution 🚀
