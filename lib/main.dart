@@ -1,6 +1,14 @@
+import 'package:ci_cd/record_audio.dart';
+import 'package:ci_cd/speech.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
+
+/// firebase cli token
+/// 1//097RfiF9HBuU6CgYIARAAGAkSNwF-L9IrzUQwaaekdvfcdBQle00trWL-CQ-F9DDjxFhCmKalnvB3eqObYQDYlc8bOOERGx3OmlE
+
+/// instal firebase tools in mac using below command
+/// curl -sL firebase.tools | upgrade=true bash
 
 void main() async
 {
@@ -21,14 +29,7 @@ class MyApp extends StatelessWidget
   {
     return MaterialApp
       (
-      title: 'Flutter Demossaaws',
-      theme: ThemeData
-        (
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page ss ssss swwWsssssssssssssssssss'),
+      home: AudioRecorder(),
     );
   }
 }

@@ -39,6 +39,10 @@ dependencies:
   firebase_auth: ^4.15.2
   change_app_package_name: ^1.1.0
   flutter_launcher_icons: ^0.13.1
+  http: ^1.2.0
+  just_audio: ^0.9.36
+  flutter_sound: ^9.2.13
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
