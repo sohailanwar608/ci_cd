@@ -5,7 +5,7 @@
     <key>NSAppTransportSecurity</key>
     <string>NSAppTransportSecurity</string>
     <key>NSAllowsArbitraryLoads</key>
-     <string>NSAllowsArbitraryLoads</string>
+    <string>NSAllowsArbitraryLoads</string>
     <true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
