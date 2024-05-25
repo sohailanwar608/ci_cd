@@ -47,8 +47,10 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<string>hello</string>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<string>hello</string>
 	<true/>
 </dict>
 </plist>
