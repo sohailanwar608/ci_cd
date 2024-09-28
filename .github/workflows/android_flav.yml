@@ -1,0 +1,198 @@
+name: Build and Distribute Android App
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  build:
+    if: |
+      (github.event.label.name == 'Distribute_Android_App' ||
+      github.event.label.name == 'Distribute_All_Apps') &&
+      (github.event.pull_request.base.ref  == 'development' || 
+       github.event.pull_request.base.ref  == 'staging' || 
+       github.event.pull_request.base.ref  == 'main')
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Download Keystore files for signing the APK/AAB
+      - name: Download Production Keystore
+        id: android_keystore_prod
+        uses: timheuer/base64-to-file@v1.0.3
+        with:
+          fileName: derive-prod.jks
+          encodedString: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Download Dev & Stag Keystore
+        id: android_keystore_dev_stag
+        uses: timheuer/base64-to-file@v1.0.3
+        with:
+          fileName: derive-ds.jks
+          encodedString: ${{ secrets.KEYSTORE_FILE_DEVSTAG }}
+
+      # Step 3: Create the Google Services JSON file for the selected flavor
+      - name: Create Google Services JSON File
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo $GOOGLE_SERVICES_JSON | base64 -di > ./android/app/src/dev/google-services.json
+          echo $GOOGLE_SERVICES_JSON | base64 -di > ./android/app/src/stag/google-services.json
+          echo $GOOGLE_SERVICES_JSON | base64 -di > ./android/app/src/prod/google-services.json
+
+      # Step 4: Create the key.properties file with secrets for signing
+      - name: Create key.properties
+        run: |
+          echo "storeFileProd=${{ steps.android_keystore_prod.outputs.filePath }}" > android/key.properties
+          echo "keyAliasProd=${{ secrets.KEYSTORE_KEY_ALIAS }}" >> android/key.properties
+          echo "storePasswordProd=${{ secrets.KEYSTORE_STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPasswordProd=${{ secrets.KEYSTORE_STORE_PASSWORD }}" >> android/key.properties
+          echo "storeFileDev=${{ steps.android_keystore_dev_stag.outputs.filePath }}" >> android/key.properties
+          echo "keyAliasDev=${{ secrets.KEYSTORE_KEY_ALIAS_DEVSTAG }}" >> android/key.properties
+          echo "storePasswordDev=${{ secrets.KEYSTORE_STORE_PASSWORD_DEVSTAG }}" >> android/key.properties
+          echo "keyPasswordDev=${{ secrets.KEYSTORE_STORE_PASSWORD_DEVSTAG }}" >> android/key.properties
+          echo "storeFileStag=${{ steps.android_keystore_dev_stag.outputs.filePath }}" >> android/key.properties
+          echo "keyAliasStag=${{ secrets.KEYSTORE_KEY_ALIAS_DEVSTAG }}" >> android/key.properties
+          echo "storePasswordStag=${{ secrets.KEYSTORE_STORE_PASSWORD_DEVSTAG }}" >> android/key.properties
+          echo "keyPasswordStag=${{ secrets.KEYSTORE_STORE_PASSWORD_DEVSTAG }}" >> android/key.properties
+
+      # Optional: Debugging the key.properties file content
+      - name: Debug Key Properties
+        run: cat android/key.properties
+
+      - name: Generate .env file
+        run: |
+          echo "APP_NAME=${{ secrets.APP_NAME }}" > .env
+          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          
+          echo "APP_NAME_DEV=${{ secrets.APP_NAME_DEV }}" >> .env
+          echo "BASE_URL_DEV=${{ secrets.BASE_URL_DEV }}" >> .env
+          
+          echo "APP_NAME_STAG=${{ secrets.APP_NAME_STAG }}" >> .env
+          echo "BASE_URL_STAG=${{ secrets.BASE_URL_STAG }}" >> .env
+
+      # Step 5: Set up Java 17 (required for Android builds)
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17.x'  # Specify the Java version to use (Java 17)
+
+      # Step 6: Set up the Flutter environment
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'  # Use the stable channel of Flutter
+
+      # Step 7: Clean previous build files and dependencies
+      - name: Clean Flutter Dependencies
+        run: flutter clean  # Clean the build artifacts and dependency caches
+
+      # Step 8: Get Flutter dependencies
+      - name: Get Flutter Dependencies
+        run: flutter pub get  # Install the Flutter dependencies specified in pubspec.yaml
+
+      # Step 9: Determine the flavor and build action based on the branch
+      - name: Set Build Flavor
+        run: |
+          if [[ "${{ github.event.pull_request.base.ref }}" == "development" ]]; then
+            echo "FLAVOR=dev" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "staging" ]]; then
+            echo "FLAVOR=stag" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "FLAVOR=prod" >> $GITHUB_ENV
+          fi
+
+      # Step 10: Build the APK or AAB based on the label (flavor)
+      - name: Build APK or AAB Based on Flavor
+        run: |
+          if [ "$FLAVOR" == "dev" ]; then
+            flutter build apk --flavor $FLAVOR --release
+          elif [ "$FLAVOR" == "stag" ] || [ "$FLAVOR" == "prod" ]; then
+            flutter build appbundle --flavor $FLAVOR --release
+          fi
+
+      # Step 11: Extract the version code from the pubspec.yaml file
+      - name: Extract Version Code
+        id: extract_version
+        run: echo "::set-output name=version_code::$(grep 'version:' pubspec.yaml | awk '{print $2}')"
+
+      # Step 12: Create a Release in GitHub for AABs or APKs
+      - name: Create a Release in GitHub
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            build/app/outputs/bundle/stagRelease/app-stag-release.aab,
+            build/app/outputs/bundle/prodRelease/app-prod-release.aab,
+            build/app/outputs/flutter-apk/app-dev-release.apk
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          tag: v${{ steps.extract_version.outputs.version_code }}
+          commit: ${{ github.sha }}
+          allowUpdates: true
+
+      # Step 13: Upload Artifact (APK or AAB) based on Flavor
+      - name: Upload APK for Dev Flavor
+        if: ${{ env.FLAVOR == 'dev' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-dev
+          path: build/app/outputs/flutter-apk/app-dev-release.apk
+
+      - name: Upload AAB for Stag and Prod Flavors
+        if: ${{ env.FLAVOR != 'dev' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-${{ env.FLAVOR }}
+          path: build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
+
+
+  release:
+    name: Release App to Internal Track
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout Repository to access the build artifact
+      - name: Checkout Repository
+        uses: actions/checkout@v1
+
+      # Step 2: Determine the flavor and build action based on the branch
+      - name: Set Build Flavor
+        run: |
+          if [[ "${{ github.event.pull_request.base.ref }}" == "development" ]]; then
+            echo "FLAVOR=dev" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "staging" ]]; then
+            echo "FLAVOR=stag" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "FLAVOR=prod" >> $GITHUB_ENV
+          fi
+
+      # Step 3: Download the previously uploaded artifact
+      - name: Get App Artifact from Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: app-${{ env.FLAVOR }}
+          path: app-release
+
+      # Step 4: Upload APK to Firebase App Distribution for internal testing (Dev flavor only)
+      - name: Upload to Firebase App Distribution
+        if: ${{ env.FLAVOR == 'dev' }}
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_DEV }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: derive-testers
+          file: app-release/app-dev-release.apk
+
+      # Step 5: Upload to the Play Store for Stag and Prod flavors.
+      - name: Upload to Play Store Internal Track
+        if: ${{ env.FLAVOR == 'stag' || env.FLAVOR == 'prod' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: ${{ env.FLAVOR == 'stag' && secrets.STAG_APP_ID || env.FLAVOR == 'prod' && secrets.PROD_APP_ID }}
+          releaseFiles: app-release/app-${{ env.FLAVOR }}-release.aab
+          track: internal
+          status: draft
