@@ -1,0 +1,129 @@
+name: Build and distribute iOS App
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  build:
+    if: |
+      (github.event.label.name == 'Distribute_iOS_App' ||
+      github.event.label.name == 'Distribute_All_Apps') && 
+      (github.event.pull_request.base.ref == 'development' || 
+      github.event.pull_request.base.ref == 'staging' || 
+      github.event.pull_request.base.ref == 'main')
+    runs-on: macos-latest
+
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up the environment file
+      - name: Generate .env file
+        run: |
+          echo "APP_NAME=${{ secrets.APP_NAME }}" > .env
+          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          
+          echo "APP_NAME_DEV=${{ secrets.APP_NAME_DEV }}" >> .env
+          echo "BASE_URL_DEV=${{ secrets.BASE_URL_DEV }}" >> .env
+          
+          echo "APP_NAME_STAG=${{ secrets.APP_NAME_STAG }}" >> .env
+          echo "BASE_URL_STAG=${{ secrets.BASE_URL_STAG }}" >> .env
+
+      # Step 3: Create directories for GoogleServices-Info.plist if they don't exist
+      - name: Create directories for GoogleServices-Info.plist files
+        run: |
+          mkdir -p ios/config/dev
+          mkdir -p ios/config/stag
+          mkdir -p ios/config/prod
+
+      # Step 4: Decode GoogleServices-Info.plist files from secrets and save them to the ios/config folder
+      # Step 4.1: Set up GoogleServices-Info.plist for dev
+      - name: Set up GoogleServices-Info.plist for dev
+        env:
+          GOOGLE_SERVICES_DEV_PLIST_JSON: ${{ secrets.GOOGLE_SERVICES_DEV_PLIST_JSON }}
+        run: |
+          echo "$GOOGLE_SERVICES_DEV_PLIST_JSON" | base64 --decode > ios/config/dev/GoogleService-Info.plist
+
+      # Step 4.2: Set up GoogleServices-Info.plist for stag
+      - name: Set up GoogleServices-Info.plist for stag
+        env:
+          GOOGLE_SERVICES_STAG_PLIST_JSON: ${{ secrets.GOOGLE_SERVICES_STAG_PLIST_JSON }}
+        run: |
+          echo "$GOOGLE_SERVICES_STAG_PLIST_JSON" | base64 --decode > ios/config/stag/GoogleService-Info.plist
+
+      # Step 4.3: Set up GoogleServices-Info.plist for prod
+      - name: Set up GoogleServices-Info.plist for prod
+        env:
+          GOOGLE_SERVICES_PROD_PLIST_JSON: ${{ secrets.GOOGLE_SERVICES_PROD_PLIST_JSON }}
+        run: |
+          echo "$GOOGLE_SERVICES_PROD_PLIST_JSON" | base64 --decode > ios/config/prod/GoogleService-Info.plist
+
+      # Step 5: Fetch the label from the PR and set it as an environment variable
+      - name: Set Build Flavor
+        run: |
+          if [[ "${{ github.event.pull_request.base.ref }}" == "development" ]]; then
+            echo "FLAVOR=dev" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "staging" ]]; then
+            echo "FLAVOR=stag" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "FLAVOR=prod" >> $GITHUB_ENV
+          fi
+
+      # Step 6: Modify ExportOptions.plist based on flavor
+      - name: Modify ExportOptions.plist for Distribution
+        if: ${{ env.FLAVOR != 'dev' }}
+        run: |
+          if [ "${FLAVOR}" == "stag" ] || [ "${FLAVOR}" == "prod" ]; then
+            sed -i '' 's/<string>ad-hoc<\/string>/<string>app-store-connect<\/string>/' ios/GithubActionsExportOptions.plist
+          fi
+
+      # Step 7: Set provisioning profile based on flavor
+      - name: Set Provisioning Profile Secret
+        run: |
+          if [ "${FLAVOR}" == "dev" ]; then
+            echo "PROVISIONING_PROFILE_BASE64=${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64_DEV }}" >> $GITHUB_ENV
+          elif [ "${FLAVOR}" == "stag" ]; then
+            echo "PROVISIONING_PROFILE_BASE64=${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64_STAG }}" >> $GITHUB_ENV
+          elif [ "${FLAVOR}" == "prod" ]; then
+            echo "PROVISIONING_PROFILE_BASE64=${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64_PROD }}" >> $GITHUB_ENV
+          fi
+
+      # Step 8: Build the iOS app
+      - uses: cedvdb/action-flutter-build-ios@v1
+        with:
+          build-cmd: flutter build ipa --release --flavor ${{ env.FLAVOR }} --export-options-plist=ios/GithubActionsExportOptions.plist
+          certificate-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          certificate-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
+          provisioning-profile-base64: ${{ env.PROVISIONING_PROFILE_BASE64 }}
+          keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
+
+      # Step 9: Debug - List Files in Build Directory
+      - name: List IPA Files
+        run: ls -al build/ios/ipa/
+
+      # Step 10: Install Firebase CLI
+      - name: Install Firebase CLI
+        run: sudo npm install -g firebase-tools
+
+      # Step 11: Upload IPA to Firebase App Distribution for internal testing (Dev flavor only)
+      - name: Deploy to Firebase App Distribution
+        if: ${{ env.FLAVOR == 'dev' }}
+        run: |
+          firebase appdistribution:distribute "build/ios/ipa/derive.ipa" \
+            --app "${{ secrets.FIREBASE_APP_ID_IOS }}" \
+            --release-notes "Latest derive-DEV APP" \
+            --groups derive-testers \
+            --token "${{ secrets.FIREBASE_TOKEN }}"
+
+      # Step 12: Distribute the build to TestFlight
+      - name: Distribute to TestFlight
+        if: ${{ env.FLAVOR != 'dev' }}
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: 'build/ios/ipa/derive.ipa'
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
